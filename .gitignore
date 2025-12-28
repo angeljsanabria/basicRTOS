@@ -8,12 +8,16 @@ sudo
 # Scripts temporales
 setup-git.sh
 
+# Carpeta con archivos que no se versionan
+noGit/
+
 # Build files
 build/
 *.elf
 *.bin
 *.o
 *.a
+*.lst
 
 # CMake
 CMakeCache.txt
