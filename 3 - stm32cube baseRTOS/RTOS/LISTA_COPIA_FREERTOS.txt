@@ -1,0 +1,90 @@
+================================================================================
+LISTA DE ARCHIVOS A COPIAR - FreeRTOS Kernel
+================================================================================
+
+ORIGEN: FreeRTOS-Kernel/
+DESTINO: 3 - stm32cube baseRTOS/RTOS/FreeRTOS/
+
+================================================================================
+1. ARCHIVOS FUENTE PRINCIPALES (.c)
+================================================================================
+
+ORIGEN:                          DESTINO:
+FreeRTOS-Kernel/tasks.c          → 3 - stm32cube baseRTOS/RTOS/FreeRTOS/Source/tasks.c
+FreeRTOS-Kernel/queue.c          → 3 - stm32cube baseRTOS/RTOS/FreeRTOS/Source/queue.c
+FreeRTOS-Kernel/list.c           → 3 - stm32cube baseRTOS/RTOS/FreeRTOS/Source/list.c
+FreeRTOS-Kernel/timers.c         → 3 - stm32cube baseRTOS/RTOS/FreeRTOS/Source/timers.c
+FreeRTOS-Kernel/event_groups.c   → 3 - stm32cube baseRTOS/RTOS/FreeRTOS/Source/event_groups.c
+FreeRTOS-Kernel/stream_buffer.c → 3 - stm32cube baseRTOS/RTOS/FreeRTOS/Source/stream_buffer.c
+
+================================================================================
+2. PORT ARM_CM4F (Código específico para Cortex-M4F)
+================================================================================
+
+ORIGEN:                                                                    DESTINO:
+FreeRTOS-Kernel/portable/GCC/ARM_CM4F/port.c  →  3 - stm32cube baseRTOS/RTOS/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
+
+NOTA: portmacro.h ya está copiado ✓
+
+================================================================================
+3. HEAP MANAGER (Gestión de memoria dinámica)
+================================================================================
+
+ORIGEN:                                          DESTINO:
+FreeRTOS-Kernel/portable/MemMang/heap_4.c  →  3 - stm32cube baseRTOS/RTOS/FreeRTOS/Source/portable/MemMang/heap_4.c
+
+================================================================================
+4. HEADERS (.h) - Copiar TODOS los archivos .h
+================================================================================
+
+ORIGEN:                                    DESTINO:
+FreeRTOS-Kernel/include/*.h          →  3 - stm32cube baseRTOS/RTOS/FreeRTOS/include/
+
+ARCHIVOS ESPECÍFICOS (copiar todos):
+- FreeRTOS-Kernel/include/FreeRTOS.h
+- FreeRTOS-Kernel/include/task.h
+- FreeRTOS-Kernel/include/queue.h
+- FreeRTOS-Kernel/include/semphr.h
+- FreeRTOS-Kernel/include/timers.h
+- FreeRTOS-Kernel/include/event_groups.h
+- FreeRTOS-Kernel/include/stream_buffer.h
+- FreeRTOS-Kernel/include/message_buffer.h
+- FreeRTOS-Kernel/include/list.h
+- FreeRTOS-Kernel/include/projdefs.h
+- FreeRTOS-Kernel/include/portable.h
+- FreeRTOS-Kernel/include/stack_macros.h
+- FreeRTOS-Kernel/include/StackMacros.h
+- FreeRTOS-Kernel/include/croutine.h
+- FreeRTOS-Kernel/include/mpu_wrappers.h
+- FreeRTOS-Kernel/include/mpu_prototypes.h
+- FreeRTOS-Kernel/include/deprecated_definitions.h
+- FreeRTOS-Kernel/include/atomic.h
+- Y cualquier otro archivo .h que esté en include/
+
+================================================================================
+RESUMEN POR CARPETA
+================================================================================
+
+CARPETA ORIGEN: FreeRTOS-Kernel/
+CARPETA DESTINO: 3 - stm32cube baseRTOS/RTOS/FreeRTOS/
+
+1. Source/ (6 archivos .c)
+   - tasks.c
+   - queue.c
+   - list.c
+   - timers.c
+   - event_groups.c
+   - stream_buffer.c
+
+2. Source/portable/GCC/ARM_CM4F/ (1 archivo)
+   - port.c
+
+3. Source/portable/MemMang/ (1 archivo)
+   - heap_4.c
+
+4. include/ (todos los .h, aproximadamente 18-20 archivos)
+   - Copiar TODOS los archivos .h
+
+================================================================================
+TOTAL: ~26-28 archivos a copiar
+================================================================================

@@ -28,3 +28,16 @@ cmake_install.cmake
 *.swp
 *~
 
+# STM32CubeIDE / proyectos STM32
+**/Debug/
+**/Release/
+**/build/
+*.launch
+
+# Archivos binarios grandes (no codigo fuente)
+*.exe
+*.dll
+*.zip
+*.tar
+*.tar.gz
+*.gz
