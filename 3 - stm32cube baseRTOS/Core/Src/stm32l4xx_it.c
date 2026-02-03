@@ -189,28 +189,16 @@ void PendSV_Handler(void)
 
 /**
   * @brief This function handles System tick timer.
+  *        SysTick is shared between HAL and FreeRTOS.
   */
 void SysTick_Handler(void)
 {
   /* USER CODE BEGIN SysTick_IRQn 0 */
-
   /* USER CODE END SysTick_IRQn 0 */
-  
-  /* FreeRTOS tick handler - must be called first */
-  /* Only call if scheduler is running */
   extern void xPortSysTickHandler(void);
-  
-  if (xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED) {
-      xPortSysTickHandler();
-  }
-  
-  /* HAL tick increment (if using HAL) - after FreeRTOS */
-  #ifdef HAL_MODULE_ENABLED
-  HAL_IncTick();
-  #endif
-  
+  xPortSysTickHandler();
   /* USER CODE BEGIN SysTick_IRQn 1 */
-
+  HAL_IncTick();
   /* USER CODE END SysTick_IRQn 1 */
 }
 

@@ -82,6 +82,7 @@ int main(void)
 
   /* Configure the system clock to 120MHz */
   Clock_Config();
+  SystemCoreClockUpdate();
 
   /* USER CODE BEGIN SysInit */
 
@@ -106,22 +107,20 @@ int main(void)
     Error_Handler();
   }
   
-  /* Task 2: Blink LED3 every 1000ms */
-  if (xTaskCreate(vLED3_Task,                    /* Task function */
-                  "LED3_Task",                   /* Task name (for debugging) */
-                  256,                           /* Stack size (in words) - increased from minimal */
-                  NULL,                          /* Parameters passed to task */
-                  tskIDLE_PRIORITY + 1,          /* Priority (same as LED2) */
-                  NULL) != pdPASS)               /* Task handle (optional) */
-  {
-    /* Task creation failed - this should not happen */
-    Error_Handler();
-  }
-  
-  /* Small delay to ensure everything is ready */
-  HAL_Delay(10);
+//  /* Task 2: Blink LED3 every 1000ms */
+//  if (xTaskCreate(vLED3_Task,                    /* Task function */
+//                  "LED3_Task",                   /* Task name (for debugging) */
+//                  256,                           /* Stack size (in words) - increased from minimal */
+//                  NULL,                          /* Parameters passed to task */
+//                  tskIDLE_PRIORITY + 1,          /* Priority (same as LED2) */
+//                  NULL) != pdPASS)               /* Task handle (optional) */
+//  {
+//    /* Task creation failed - this should not happen */
+//    Error_Handler();
+//  }
   
   /* Start the FreeRTOS scheduler */
+  /* NO usar HAL_Delay() aqui - FreeRTOS reconfigurara SysTick */
   /* This function will NOT return - control passes to tasks */
   /* FreeRTOS will configure SysTick automatically */
   vTaskStartScheduler();

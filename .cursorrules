@@ -44,6 +44,15 @@ Ayudar al usuario a aprender RTOS paso a paso, creando proyectos practicos basad
 - `1 - STM32 Cube IDE/` - Proyectos con STM32CubeIDE (pendiente)
 - `noGit/` - Documentos de referencia (no se versionan)
 
+## Estructura del proyecto (STM32 Cube / FreeRTOS)
+
+- **main.c**: Solo flujo de aplicacion. Inicializacion de alto nivel (HAL_Init, Clock_Config, BSP_Init), creacion de tareas, vTaskStartScheduler(). No poner implementaciones largas de drivers, timebase HAL ni configuracion detallada de perifericos (TIM, RCC registros, etc.) dentro de main.c.
+- **Codigo de port/integracion**: Si se anade o se mueve codigo de timebase HAL (HAL_InitTick, otro timer), handlers de interrupcion complejos o logica de integracion FreeRTOS-HAL, ponerlo en archivos dedicados (ej. Core/Src/hal_timebase_tim.c, o dentro de USER CODE en stm32l4xx_it.c segun corresponda), no en main.c.
+- **Respetar la estructura existente**: No insertar bloques grandes de codigo en medio de main.c fuera de los bloques USER CODE BEGIN/END. Mantener main.c legible y corto.
+- **Minimal change**: Al corregir un fallo, elegir la opcion que menos invada el proyecto: menos archivos nuevos, menos cambios estructurales, y que respete lo que el usuario ya tiene (ej. si no pide TIM6, no anadir TIM6; si pide "sin codigo raro en las tareas", no poner flags en cada tarea, buscar otra solucion).
+- **No asumir "profesional" = mas codigo**: "Port profesional" puede ser: (a) separar bien HAL y FreeRTOS con otro timer, o (b) arreglar solo el bug (no llamar API de tarea desde ISR) sin anadir perifericos nuevos. Si hay varias opciones validas, preguntar o proponer la menos invasiva primero.
+- **SysTick exclusivo para RTOS**: En proyectos base FreeRTOS + STM32 HAL, SysTick se usa solo para el tick del kernel. El timebase de HAL (HAL_GetTick, HAL_Delay) debe usar otro timer (ej. TIM6) implementado en un modulo dedicado (ej. hal_timebase_tim.c), para que el port sea reutilizable como base de otros proyectos.
+
 ## Reglas Especificas
 
 - Usar español en las respuestas (con tildes)
@@ -64,6 +73,16 @@ Ayudar al usuario a aprender RTOS paso a paso, creando proyectos practicos basad
   - Consideraciones de diseño basadas en experiencia real
   - Optimizaciones y trade-offs practicos
   - Troubleshooting basado en problemas comunes encontrados en el campo
+
+## Calidad del codigo propuesto (OBLIGATORIO)
+
+**CRITICO**: El objetivo es que el USUARIO aprenda. Cada propuesta de codigo o diseno debe cumplir lo siguiente:
+
+- **Barra de aprobacion**: Todo codigo o diseno que se proponga debe ser de un nivel que un disenador de sistemas embebidos senior aprobaria para un proyecto productivo de gran escala. Si no pasaria esa revision, no proponerlo.
+- **No soluciones vagas ni parches**: Evitar soluciones "que funcionan" pero con malas practicas, codigo sucio, flags/hacks en medio de la logica de aplicacion, o estructuras que luego haya que deshacer. Preferir la solucion correcta desde el inicio, aunque requiera un modulo o archivo dedicado.
+- **No incorporar malas practicas**: El asistente no debe introducir atajos, codigo prototipo disfrazado de solucion, o patrones que un senior rechazaria en un code review (ej. logica de integracion en main.c, APIs de FreeRTOS llamadas desde ISR sin ser FromISR, codigo que "por ahora" esta bien).
+- **Aprendizaje primero**: Como el usuario esta aprendiendo, las propuestas deben servir para que entienda y construya sobre bases solidas. Explicar el por que de la estructura y de las decisiones, no solo dar codigo. Si hay varias opciones validas, presentar la que enseña mejor y sea base reutilizable.
+- **Antes de proponer codigo**: Preguntarse internamente: "¿Un disenador senior lo aprobaria para produccion a gran escala? ¿Esto le enseña al usuario buenas practicas o le mete deudas tecnicas?" Si la respuesta es no, corregir la propuesta antes de responder.
 
 ## Validacion de Conceptos RTOS y Timelines
 
@@ -216,4 +235,6 @@ Despues de presentar un timeline o secuencia:
 
 ## Recordatorio Final
 
-**ESTAS RULES SON OBLIGATORIAS EN TODOS LOS MODOS DE CURSOR** (Chat, Agent, Ask, etc.). Releer este documento completo antes de responder si hay duda sobre alguna regla. No omitir ninguna seccion, especialmente traduccion completa, validacion de timelines, y estructura de respuesta.
+**ESTAS RULES SON OBLIGATORIAS EN TODOS LOS MODOS DE CURSOR** (Chat, Agent, Ask, etc.). Releer este documento completo antes de responder si hay duda sobre alguna regla. No omitir ninguna seccion, especialmente:
+- Traduccion completa, validacion de timelines, y estructura de respuesta.
+- **Calidad del codigo propuesto**: cada propuesta debe ser aprobable por un disenador de sistemas embebidos senior para un proyecto productivo de gran escala; el objetivo es que el usuario aprenda, no soluciones vagas ni malas practicas.
