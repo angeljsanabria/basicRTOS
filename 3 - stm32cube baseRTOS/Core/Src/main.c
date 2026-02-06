@@ -96,6 +96,7 @@ int main(void)
   /* Create FreeRTOS tasks */
   /* Task 1: Blink LED2 every 500ms */
   /* Use larger stack size (256 words = 1024 bytes) for safety */
+  /* Task 1: Blink LED2 every 500ms */
   if (xTaskCreate(vLED2_Task,                    /* Task function */
                   "LED2_Task",                   /* Task name (for debugging) */
                   256,                           /* Stack size (in words) - increased from minimal */
@@ -107,17 +108,17 @@ int main(void)
     Error_Handler();
   }
   
-//  /* Task 2: Blink LED3 every 1000ms */
-//  if (xTaskCreate(vLED3_Task,                    /* Task function */
-//                  "LED3_Task",                   /* Task name (for debugging) */
-//                  256,                           /* Stack size (in words) - increased from minimal */
-//                  NULL,                          /* Parameters passed to task */
-//                  tskIDLE_PRIORITY + 1,          /* Priority (same as LED2) */
-//                  NULL) != pdPASS)               /* Task handle (optional) */
-//  {
-//    /* Task creation failed - this should not happen */
-//    Error_Handler();
-//  }
+  /* Task 2: Blink LED3 every 1000ms */
+  if (xTaskCreate(vLED3_Task,                    /* Task function */
+                  "LED3_Task",                   /* Task name (for debugging) */
+                  256,                           /* Stack size (in words) - increased from minimal */
+                  NULL,                          /* Parameters passed to task */
+                  tskIDLE_PRIORITY + 1,          /* Priority (same as LED2) */
+                  NULL) != pdPASS)               /* Task handle (optional) */
+  {
+    /* Task creation failed - this should not happen */
+    Error_Handler();
+  }
   
   /* Start the FreeRTOS scheduler */
   /* NO usar HAL_Delay() aqui - FreeRTOS reconfigurara SysTick */
@@ -161,10 +162,11 @@ void vLED2_Task(void *pvParameters)
   {
     /* Toggle LED2 */
     BSP_LED_Toggle(BSP_LED2);
+
     
     /* Delay for 500ms (non-blocking for other tasks) */
     /* pdMS_TO_TICKS converts milliseconds to FreeRTOS ticks */
-    vTaskDelay(pdMS_TO_TICKS(500));
+    vTaskDelay(pdMS_TO_TICKS(1500));
   }
 }
 
@@ -177,13 +179,13 @@ void vLED2_Task(void *pvParameters)
 void vLED3_Task(void *pvParameters)
 {
   (void)pvParameters;  /* Unused parameter */
-  
+
   /* Infinite loop - task never exits */
   for(;;)
   {
     /* Toggle LED3 */
-    BSP_LED_Toggle(BSP_LED3);
-    
+    BSP_LED_Toggle(BSP_LED2);
+
     /* Delay for 1000ms (non-blocking for other tasks) */
     vTaskDelay(pdMS_TO_TICKS(1000));
   }
@@ -248,3 +250,34 @@ void vAssertCalled( const char *pcFile, unsigned long ulLine )
   }
 }
 #endif /* DEBUG */
+
+/* USER CODE BEGIN StackOverflowHook */
+#if ( configCHECK_FOR_STACK_OVERFLOW > 0 )
+/**
+  * @brief  FreeRTOS stack overflow hook
+  * @param  xTask: Handle of the task that overflowed its stack
+  * @param  pcTaskName: Name of the task that overflowed its stack
+  * @retval None
+  * @note   This function is called when FreeRTOS detects a stack overflow
+  */
+void vApplicationStackOverflowHook( TaskHandle_t xTask, char *pcTaskName )
+{
+  (void)xTask;
+  (void)pcTaskName;
+  
+  /* Disable interrupts */
+  taskDISABLE_INTERRUPTS();
+  
+  /* User can add his own implementation to report the task name,
+     ex: printf("Stack overflow in task: %s\r\n", pcTaskName) */
+  
+  /* Infinite loop - halt execution */
+  for( ;; )
+  {
+    /* Blink LED to indicate stack overflow error */
+    BSP_LED_Toggle(BSP_LED2);
+    HAL_Delay(200);
+  }
+}
+#endif /* configCHECK_FOR_STACK_OVERFLOW */
+/* USER CODE END StackOverflowHook */

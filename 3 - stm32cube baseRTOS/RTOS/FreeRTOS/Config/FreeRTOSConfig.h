@@ -64,7 +64,7 @@
 #define configMINIMAL_STACK_SIZE          ( ( uint16_t ) 128 )
 
 /* Total heap size (in bytes) */
-#define configTOTAL_HEAP_SIZE             ( ( size_t ) ( 16 * 1024 ) )
+#define configTOTAL_HEAP_SIZE             ( ( size_t ) ( 32 * 1024 ) )
 
 /*-----------------------------------------------------------
  * Scheduler Configuration
@@ -99,6 +99,9 @@
 /* Support static allocation */
 #define configSUPPORT_STATIC_ALLOCATION  0
 
+/* Check for stack overflow */
+#define configCHECK_FOR_STACK_OVERFLOW   1
+
 /*-----------------------------------------------------------
  * Hook Functions
  *----------------------------------------------------------*/
@@ -121,7 +124,7 @@
  * Timer Configuration
  *----------------------------------------------------------*/
 /* Use software timers */
-#define configUSE_TIMERS                 1
+#define configUSE_TIMERS                 0
 
 /* Timer task priority */
 #define configTIMER_TASK_PRIORITY        ( configMAX_PRIORITIES - 1 )
@@ -130,7 +133,7 @@
 #define configTIMER_QUEUE_LENGTH         10
 
 /* Timer task stack depth */
-#define configTIMER_TASK_STACK_DEPTH     ( configMINIMAL_STACK_SIZE * 2 )
+#define configTIMER_TASK_STACK_DEPTH     ( configMINIMAL_STACK_SIZE * 4 )
 
 /*-----------------------------------------------------------
  * Interrupt Configuration

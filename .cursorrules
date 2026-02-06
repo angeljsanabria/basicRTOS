@@ -1,5 +1,46 @@
 # Reglas para Curso RTOS - STM32
 
+## ⚠️ PROTOCOLO OBLIGATORIO ANTES DE CADA RESPUESTA
+
+**EJECUTAR ESTE PROTOCOLO ANTES DE RESPONDER CUALQUIER PREGUNTA O REALIZAR CUALQUIER ACCION:**
+
+### PASO 1: VERIFICACION DE CONTEXTO (OBLIGATORIO)
+- [ ] ¿El usuario esta pidiendo modificar codigo? → Ir a PASO 2
+- [ ] ¿El usuario esta pidiendo agregar un include? → Ir a PASO 3
+- [ ] ¿El usuario esta preguntando sobre conceptos? → Verificar seccion de traduccion y contexto educativo
+
+### PASO 2: VERIFICACION DE ARCHIVOS ANTES DE EDITAR (OBLIGATORIO)
+**EJECUTAR ANTES DE CUALQUIER search_replace, write, o edit_file:**
+
+1. **Extraer la ruta completa del archivo** del parametro `file_path`
+2. **Verificar si contiene**:
+   - `RTOS/FreeRTOS/Source/` → **BLOQUEAR - NO EDITAR**
+   - `Drivers/STM32L4xx_HAL_Driver/` → **BLOQUEAR - NO EDITAR**
+   - `Drivers/CMSIS/` → **BLOQUEAR - NO EDITAR**
+   - `portable/GCC/ARM_CM4F/` → **BLOQUEAR - NO EDITAR**
+   - `portable/MemMang/` → **BLOQUEAR - NO EDITAR**
+3. **Si esta bloqueado**: Buscar solucion en configuracion o codigo de aplicacion
+4. **Si esta permitido**: Continuar con la edicion
+
+### PASO 3: VERIFICACION DE INCLUDES (OBLIGATORIO)
+**EJECUTAR SI EL COMPILADOR NO ENCUENTRA UN HEADER:**
+
+1. **Identificar donde esta el archivo** (ej: `BSP/Inc/bsp_leds.h`)
+2. **Revisar `.cproject`** para ver rutas de include configuradas
+3. **Si la ruta NO esta en `.cproject`**:
+   - Agregar `../BSP/Inc` (o la ruta correspondiente) a las rutas de include en Debug Y Release
+   - Usar `#include "archivo.h"` en el codigo (SIN rutas relativas)
+4. **NUNCA usar rutas relativas** como `../../BSP/Inc/bsp_leds.h` en el codigo
+
+### PASO 4: VERIFICACION DE CALIDAD (OBLIGATORIO)
+Antes de proponer cualquier solucion:
+- [ ] ¿Es una solucion profesional aprobable por un desarrollador senior?
+- [ ] ¿Sigue las practicas estandar del entorno (STM32CubeIDE)?
+- [ ] ¿No es un workaround temporal?
+- [ ] ¿No hace perder tiempo al usuario?
+
+**SI ALGUNA VERIFICACION FALLA: DETENERSE Y BUSCAR LA SOLUCION CORRECTA**
+
 ## ⚠️ APLICACION OBLIGATORIA DE ESTAS RULES
 
 **CRITICO**: Estas rules son OBLIGATORIAS y deben aplicarse SIEMPRE, sin excepciones, en TODOS los modos de interaccion:
@@ -9,13 +50,15 @@
 - Cualquier otro modo de Cursor
 
 **NO IGNORAR ESTAS RULES EN NINGUN CASO**. Todas las secciones de este documento deben seguirse estrictamente, especialmente:
+- **VERIFICACION OBLIGATORIA ANTES DE CUALQUIER EDICION**: Ejecutar el checklist de verificacion de ruta ANTES de usar search_replace, write, o edit_file. Si el archivo esta en `RTOS/FreeRTOS/Source/` o `Drivers/`, BLOQUEAR la edicion inmediatamente.
+- **VERIFICACION OBLIGATORIA DE INCLUDES**: Si falta un header, revisar `.cproject` y agregar la ruta. NUNCA usar rutas relativas en el codigo.
 - Traduccion completa (NUNCA abreviar)
 - Validacion de timelines y prioridades
 - Estructura de respuesta para fragmentos de libro
 - Comparacion con baremetal cuando corresponda
 - Contexto educativo siempre
 
-**Si el agente olvida seguir alguna rule, debe releer este documento completo antes de responder.**
+**Si el agente olvida seguir alguna rule, debe releer este documento completo antes de responder. Si el agente intenta modificar un archivo de libreria o usar rutas relativas, debe DETENERSE inmediatamente y buscar la solucion correcta.**
 
 ## Contexto del Proyecto
 
@@ -63,6 +106,166 @@ Ayudar al usuario a aprender RTOS paso a paso, creando proyectos practicos basad
 - **IMPORTANTE**: Al explicar conceptos de RTOS, SIEMPRE comparar al final con el estilo baremetal (que es el estilo que conoce el usuario). Esto ayuda a entender las diferencias y ventajas de cada enfoque.
 - **CONTEXTO EDUCATIVO**: Cuando se presente un extracto de libro, justificar por que el libro explica sobre eso, por que es necesario aprenderlo, y para que servira comprender el tema con futuros conceptos clave. Esto ayuda a entender la importancia y relevancia del tema.
 - Comparar diferentes enfoques cuando sea relevante.
+
+## ⚠️ PRACTICA PROFESIONAL BASICA: NO MODIFICAR ARCHIVOS DE LIBRERIAS
+
+**FUNDAMENTAL - PRACTICA ESTANDAR DE DESARROLLO**: NUNCA modificar archivos de librerias oficiales o de terceros. Esto es una practica basica y fundamental de cualquier desarrollador profesional, no una opcion ni una sugerencia.
+
+## ⚠️ PRACTICA PROFESIONAL: CONFIGURACION DE RUTAS DE INCLUDE
+
+**CRITICO - NO USAR RUTAS RELATIVAS EN EL CODIGO**: Cuando un archivo de header no se encuentra, NUNCA usar rutas relativas como `../../BSP/Inc/bsp_leds.h` en el codigo fuente. Esto es una solucion temporal y no profesional que hace perder tiempo al usuario.
+
+### Por que NO usar rutas relativas:
+
+1. **Portabilidad**: Las rutas relativas dependen de la ubicacion del archivo. Si cambia la estructura de carpetas o se mueve el archivo, se rompe.
+2. **Mantenibilidad**: Hace el codigo fragil y dificil de mantener. Otros desarrolladores no sabran de donde viene el header.
+3. **Estándar profesional**: En proyectos embebidos profesionales (STM32CubeIDE, etc.), las rutas de include se configuran en el sistema de build (`.cproject`), NO en el codigo fuente.
+4. **Consistencia**: El proyecto ya usa rutas de include configuradas (como `../Core/Inc`, `../Drivers/...`). Usar rutas relativas rompe esta consistencia.
+5. **Pérdida de tiempo**: El usuario tiene que volver a pedir la solucion correcta, perdiendo tiempo valioso.
+
+### Solucion CORRECTA cuando falta un header:
+
+1. **Verificar el error de compilacion**: Identificar que archivo falta y donde esta ubicado.
+2. **Revisar `.cproject`**: Ver las rutas de include configuradas en el proyecto.
+3. **Agregar la ruta al proyecto**: Agregar la ruta de include (ej: `../BSP/Inc`) en `.cproject` en las secciones de Debug y Release.
+4. **Usar include simple**: En el codigo fuente, usar `#include "nombre_archivo.h"` sin rutas relativas.
+
+### Checklist OBLIGATORIO antes de agregar un include:
+
+- [ ] ¿El archivo existe en una carpeta que deberia estar en las rutas de include?
+- [ ] ¿La carpeta esta configurada en `.cproject` como ruta de include?
+- [ ] Si NO esta configurada: ¿Agregue la ruta a `.cproject` en Debug Y Release?
+- [ ] ¿El include en el codigo es simple (`#include "archivo.h"`) sin rutas relativas?
+
+**REGLA DE ORO**: Si el compilador no encuentra un header, la solucion es configurar el proyecto correctamente, NO usar workarounds temporales como rutas relativas. Esto es conocimiento basico de desarrollo profesional embebido.
+
+### Archivos PROHIBIDOS de modificar:
+
+- **NUNCA modificar archivos dentro de `RTOS/FreeRTOS/Source/`**:
+  - `tasks.c`, `queue.c`, `timers.c`, `event_groups.c`, `stream_buffer.c`, `message_buffer.c`
+  - `list.c`, `croutine.c`
+  - Cualquier archivo dentro de `portable/GCC/ARM_CM4F/` (port.c, portmacro.h)
+  - Cualquier archivo dentro de `portable/MemMang/` (heap_*.c)
+  - Cualquier otro archivo fuente de FreeRTOS
+
+- **NUNCA modificar archivos de HAL de STM32**:
+  - Archivos dentro de `Drivers/STM32L4xx_HAL_Driver/`
+  - Archivos dentro de `Drivers/CMSIS/`
+
+### Archivos PERMITIDOS de modificar:
+
+- **Solo archivos de configuracion**:
+  - `RTOS/FreeRTOS/Config/FreeRTOSConfig.h` (configuracion de FreeRTOS)
+  - Archivos de configuracion del proyecto (.ioc, etc.)
+
+- **Solo archivos de aplicacion**:
+  - `Core/Src/main.c` (codigo de aplicacion)
+  - `Core/Src/stm32l4xx_it.c` (solo dentro de bloques USER CODE)
+  - `BSP/Src/*.c` (codigo BSP del usuario)
+  - `System/Src/*.c` (codigo de sistema del usuario, ej. hal_timebase_stub.c, freertos_systick_config.c)
+  - Cualquier archivo creado por el usuario para su aplicacion
+
+### Si hay un problema con la libreria:
+
+1. **NO modificar la libreria**
+2. **Buscar el problema en**:
+   - Configuracion (FreeRTOSConfig.h)
+   - Codigo de aplicacion (main.c, tareas, etc.)
+   - Integracion HAL-RTOS (hal_timebase_stub.c, freertos_systick_config.c)
+   - Orden de inicializacion
+   - Stack/heap insuficiente (configuracion, no codigo de libreria)
+
+3. **Si el problema parece estar en la libreria**:
+   - Revisar la configuracion primero
+   - Comparar con ejemplos oficiales de STM32CubeMX
+   - Verificar que los archivos del port sean los correctos
+   - Preguntar al usuario antes de cualquier cambio
+
+**PRACTICA PROFESIONAL BASICA**: Si un problema requiere modificar un archivo de libreria, el problema NO esta en la libreria, esta en la configuracion o en como se esta usando. Buscar la solucion correcta sin tocar la libreria. Esto es conocimiento basico de desarrollo de software.
+
+**VERIFICACION OBLIGATORIA**: Antes de usar cualquier herramienta de edicion (search_replace, write, etc.), verificar que el archivo NO este dentro de `RTOS/FreeRTOS/Source/` ni dentro de `Drivers/`. Si esta en esas carpetas, DETENERSE y buscar otra solucion.
+
+## Buenas Practicas: Por Que NO Modificar Librerias
+
+### Impacto Real en Proyectos
+
+Modificar archivos de librerias oficiales puede **arruinar proyectos enteros** por multiples razones:
+
+1. **Incompatibilidad con actualizaciones**:
+   - Cuando la libreria se actualiza (ej. nueva version de FreeRTOS), los cambios locales se pierden
+   - Puede causar conflictos de merge imposibles de resolver
+   - El proyecto queda atascado en una version antigua de la libreria
+
+2. **Problemas con forks/clones**:
+   - Si alguien tiene su propio fork/clone de la libreria RTOS y no modifica esos archivos, los cambios locales no estaran en su version
+   - Al compartir codigo o hacer merge, se pierden los cambios o causan conflictos
+   - Diferentes desarrolladores tendran versiones diferentes de la libreria
+
+3. **Mantenimiento imposible**:
+   - Los cambios en librerias son dificiles de rastrear y documentar
+   - Cuando hay un bug, es imposible saber si es de la libreria original o de los cambios locales
+   - No se pueden recibir actualizaciones de seguridad o correcciones de bugs de la libreria oficial
+
+4. **Problemas de colaboracion**:
+   - Otros desarrolladores no esperan cambios en librerias oficiales
+   - Puede causar comportamientos inesperados que son dificiles de debuggear
+   - Rompe el principio de "single source of truth" para librerias
+
+5. **Violacion de principios de desarrollo**:
+   - Va contra el principio de separacion de responsabilidades
+   - Rompe la encapsulacion y abstraccion que proporcionan las librerias
+   - Hace el codigo no portable y dificil de mantener
+
+### Escenarios Reales Donde Esto Arruina Proyectos
+
+- **Equipo de desarrollo**: Un desarrollador modifica `tasks.c` localmente. Otro desarrollador clona el proyecto y tiene comportamientos diferentes. El bug es imposible de reproducir.
+
+- **Actualizacion de libreria**: El proyecto necesita actualizar FreeRTOS por seguridad. Los cambios locales en `port.c` causan conflictos de merge. El proyecto queda bloqueado.
+
+- **Fork de libreria**: El proyecto usa un fork personalizado de FreeRTOS. Los cambios locales en archivos de la libreria no estan en el fork, causando inconsistencias.
+
+- **CI/CD**: El sistema de integracion continua usa una version limpia de la libreria. Los cambios locales no estan presentes, causando fallos en CI que no se reproducen localmente.
+
+### Soluciones Correctas
+
+Si hay un problema que parece requerir modificar la libreria:
+
+1. **Revisar la configuracion primero**: 99% de los problemas estan en la configuracion, no en la libreria
+2. **Usar hooks/callbacks**: FreeRTOS proporciona hooks para personalizar comportamiento sin modificar codigo
+3. **Crear wrappers**: Envolver funciones de la libreria en funciones propias si se necesita comportamiento diferente
+4. **Reportar bugs**: Si realmente hay un bug en la libreria, reportarlo a los mantenedores oficiales
+5. **Fork oficial si es necesario**: Si realmente se necesita modificar la libreria, hacer un fork oficial y mantenerlo separado del proyecto
+
+### Verificacion Antes de Cualquier Edicion
+
+**CHECKLIST OBLIGATORIO - EJECUTAR ANTES DE CUALQUIER search_replace, write, o edit_file**:
+
+**PASO 1 - VERIFICACION DE RUTA (OBLIGATORIO)**:
+- Extraer la ruta completa del archivo del parametro `file_path`
+- Verificar si la ruta contiene cualquiera de estos strings:
+  * `RTOS/FreeRTOS/Source/` → **BLOQUEAR EDICION - ARCHIVO PROHIBIDO**
+  * `Drivers/STM32L4xx_HAL_Driver/` → **BLOQUEAR EDICION - ARCHIVO PROHIBIDO**
+  * `Drivers/CMSIS/` → **BLOQUEAR EDICION - ARCHIVO PROHIBIDO**
+  * `portable/GCC/ARM_CM4F/` → **BLOQUEAR EDICION - ARCHIVO PROHIBIDO**
+  * `portable/MemMang/` → **BLOQUEAR EDICION - ARCHIVO PROHIBIDO**
+
+**PASO 2 - ARCHIVOS PERMITIDOS (SOLO ESTOS)**:
+- `RTOS/FreeRTOS/Config/FreeRTOSConfig.h` → **PERMITIDO** (solo configuracion)
+- `Core/Src/main.c` → **PERMITIDO** (codigo de aplicacion)
+- `Core/Src/stm32l4xx_it.c` → **PERMITIDO** (solo dentro de USER CODE)
+- `BSP/Src/*.c` → **PERMITIDO** (codigo BSP del usuario)
+- `System/Src/*.c` → **PERMITIDO** (codigo de sistema del usuario)
+
+**PASO 3 - SI EL ARCHIVO ESTA BLOQUEADO**:
+- **NO USAR search_replace, write, o edit_file**
+- **DETENERSE INMEDIATAMENTE**
+- Explicar al usuario que el archivo es parte de una libreria oficial y no puede modificarse
+- Buscar la solucion en configuracion o codigo de aplicacion
+- Si el problema parece estar en la libreria, revisar configuracion primero (99% de los casos)
+
+**REGLA TECNICA**: Si la ruta del archivo contiene `RTOS/FreeRTOS/Source/` o `Drivers/`, la herramienta de edicion NO DEBE SER LLAMADA. El asistente debe detenerse y buscar otra solucion.
+
+**Si hay duda sobre si un archivo es parte de una libreria, NO modificar. Preguntar al usuario primero.**
 
 ## Rol del Asistente
 
@@ -236,5 +439,33 @@ Despues de presentar un timeline o secuencia:
 ## Recordatorio Final
 
 **ESTAS RULES SON OBLIGATORIAS EN TODOS LOS MODOS DE CURSOR** (Chat, Agent, Ask, etc.). Releer este documento completo antes de responder si hay duda sobre alguna regla. No omitir ninguna seccion, especialmente:
+- **PRACTICA PROFESIONAL BASICA**: NUNCA modificar archivos de librerias oficiales (`RTOS/FreeRTOS/Source/`, `Drivers/`). Esto es conocimiento fundamental de desarrollo de software, no una opcion. Ver seccion "Buenas Practicas: Por Que NO Modificar Librerias" para entender el impacto real en proyectos.
+- **CONFIGURACION DE RUTAS DE INCLUDE**: NUNCA usar rutas relativas en el codigo (`../../ruta/archivo.h`). Siempre configurar las rutas en `.cproject` y usar includes simples (`#include "archivo.h"`). Ver seccion "Practica Profesional: Configuracion de Rutas de Include".
 - Traduccion completa, validacion de timelines, y estructura de respuesta.
 - **Calidad del codigo propuesto**: cada propuesta debe ser aprobable por un disenador de sistemas embebidos senior para un proyecto productivo de gran escala; el objetivo es que el usuario aprenda, no soluciones vagas ni malas practicas.
+
+**ANTES DE CUALQUIER EDICION**: Ejecutar el CHECKLIST OBLIGATORIO de la seccion "Buenas Practicas". Verificar que el archivo NO este dentro de `RTOS/FreeRTOS/Source/` ni dentro de `Drivers/`. Si esta en esas carpetas, DETENERSE inmediatamente y buscar la solucion en configuracion o codigo de aplicacion.
+
+**ANTES DE AGREGAR UN INCLUDE**: Si el compilador no encuentra un header, revisar `.cproject` y agregar la ruta de include al proyecto. NUNCA usar rutas relativas en el codigo. Esto hace perder tiempo al usuario y no es profesional.
+
+## ⚠️ VERIFICACION FINAL OBLIGATORIA
+
+**ESTE PROTOCOLO DEBE EJECUTARSE ANTES DE CADA RESPUESTA, SIN EXCEPCIONES:**
+
+1. **¿Voy a editar un archivo?**
+   - [ ] SI → Verificar que NO este en `RTOS/FreeRTOS/Source/` ni `Drivers/`
+   - [ ] Si esta en esas carpetas → DETENERSE y buscar solucion en configuracion
+
+2. **¿Voy a agregar un include?**
+   - [ ] SI → Verificar que la ruta este en `.cproject`
+   - [ ] Si NO esta → Agregar la ruta a `.cproject` (Debug Y Release)
+   - [ ] NUNCA usar rutas relativas en el codigo
+
+3. **¿Es mi solucion profesional?**
+   - [ ] ¿Sigue practicas estandar del entorno?
+   - [ ] ¿No es un workaround temporal?
+   - [ ] ¿No hace perder tiempo al usuario?
+
+**SI CUALQUIER VERIFICACION FALLA: DETENERSE, RELEER LAS RULES, Y BUSCAR LA SOLUCION CORRECTA**
+
+**ESTAS RULES ESTAN ACTIVAS SIEMPRE. NO HAY EXCEPCIONES. NO HAY "SOLUCIONES RAPIDAS". SOLO SOLUCIONES PROFESIONALES.**

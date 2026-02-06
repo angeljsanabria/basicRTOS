@@ -22,7 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "bsp_leds.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -46,10 +46,17 @@ UART_HandleTypeDef huart3;
 
 PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
-/* Definitions for defaultTask */
-osThreadId_t defaultTaskHandle;
-const osThreadAttr_t defaultTask_attributes = {
-  .name = "defaultTask",
+/* Definitions for LED2Task */
+osThreadId_t LED2TaskHandle;
+const osThreadAttr_t LED2Task_attributes = {
+  .name = "LED2Task",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for LED3Task */
+osThreadId_t LED3TaskHandle;
+const osThreadAttr_t LED3Task_attributes = {
+  .name = "LED3Task",
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
@@ -63,7 +70,8 @@ static void MX_GPIO_Init(void);
 static void MX_LPUART1_UART_Init(void);
 static void MX_USART3_UART_Init(void);
 static void MX_USB_OTG_FS_PCD_Init(void);
-void StartDefaultTask(void *argument);
+void LED2Task(void *argument);
+void LED3Task(void *argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -107,7 +115,8 @@ int main(void)
   MX_USART3_UART_Init();
   MX_USB_OTG_FS_PCD_Init();
   /* USER CODE BEGIN 2 */
-
+  /* Initialize Board Support Package (LEDs) */
+  BSP_LED_Init();
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -130,11 +139,11 @@ int main(void)
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* creation of defaultTask */
-  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
-
   /* USER CODE BEGIN RTOS_THREADS */
-  /* add threads, ... */
+  /* creation of LED2Task */
+  LED2TaskHandle = osThreadNew(LED2Task, NULL, &LED2Task_attributes);
+  /* creation of LED3Task */
+  LED3TaskHandle = osThreadNew(LED3Task, NULL, &LED3Task_attributes);
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
@@ -359,7 +368,8 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOA_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, LD3_Pin|LD2_Pin, GPIO_PIN_RESET);
+  /* LEDs initialization moved to BSP_LED_Init() */
+  /* HAL_GPIO_WritePin(GPIOB, LD3_Pin|LD2_Pin, GPIO_PIN_RESET); */
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(USB_PowerSwitchOn_GPIO_Port, USB_PowerSwitchOn_Pin, GPIO_PIN_RESET);
@@ -371,11 +381,12 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : LD3_Pin LD2_Pin */
-  GPIO_InitStruct.Pin = LD3_Pin|LD2_Pin;
+  /* LEDs initialization moved to BSP_LED_Init() */
+  /* GPIO_InitStruct.Pin = LD3_Pin|LD2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct); */
 
   /*Configure GPIO pin : USB_OverCurrent_Pin */
   GPIO_InitStruct.Pin = USB_OverCurrent_Pin;
@@ -398,22 +409,54 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE END 4 */
 
-/* USER CODE BEGIN Header_StartDefaultTask */
+/* USER CODE BEGIN Header_LED2Task */
 /**
-  * @brief  Function implementing the defaultTask thread.
-  * @param  argument: Not used
+  * @brief  FreeRTOS Task: Blink LED2 every 1500ms
+  * @param  argument: Task parameters (unused)
   * @retval None
+  * @note   This task runs independently and can be preempted by higher priority tasks
   */
-/* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void *argument)
+/* USER CODE END Header_LED2Task */
+void LED2Task(void *argument)
 {
   /* USER CODE BEGIN 5 */
-  /* Infinite loop */
+  (void)argument;  /* Unused parameter */
+  
+  /* Infinite loop - task never exits */
   for(;;)
   {
-    osDelay(1);
+    /* Toggle LED2 */
+    BSP_LED_Toggle(BSP_LED2);
+    
+    /* Delay for 1500ms (non-blocking for other tasks) */
+    osDelay(1000);
   }
   /* USER CODE END 5 */
+}
+
+/* USER CODE BEGIN Header_LED3Task */
+/**
+  * @brief  FreeRTOS Task: Blink LED3 every 1000ms
+  * @param  argument: Task parameters (unused)
+  * @retval None
+  * @note   This task runs independently and can be preempted by higher priority tasks
+  */
+/* USER CODE END Header_LED3Task */
+void LED3Task(void *argument)
+{
+  /* USER CODE BEGIN LED3Task */
+  (void)argument;  /* Unused parameter */
+  
+  /* Infinite loop - task never exits */
+  for(;;)
+  {
+    /* Toggle LED3 */
+    BSP_LED_Toggle(BSP_LED3);
+    
+    /* Delay for 1000ms (non-blocking for other tasks) */
+    vTaskDelay(500);
+  }
+  /* USER CODE END LED3Task */
 }
 
 /**
