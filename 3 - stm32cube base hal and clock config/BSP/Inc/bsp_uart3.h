@@ -1,7 +1,7 @@
 /**
  ******************************************************************************
  * @file    bsp_uart3.h
- * @brief   BSP - USART3 (ST-LINK VCP on NUCLEO-L4R5ZI, PD8/PD9)
+ * @brief   BSP - USART3 (ST-LINK VCP on NUCLEO-L4R5ZI)
  ******************************************************************************
  */
 
@@ -13,6 +13,12 @@ extern "C" {
 #endif
 
 #include "stm32l4xx_hal.h"
+
+/* Pin mux: PD8 TX, PD9 RX (same net names as ST board / Cube) */
+#define BSP_USART3_TX_PIN        GPIO_PIN_8
+#define BSP_USART3_RX_PIN        GPIO_PIN_9
+#define BSP_USART3_GPIO_PORT     GPIOD
+#define BSP_USART3_GPIO_AF       GPIO_AF7_USART3
 
 extern UART_HandleTypeDef huart3;
 
