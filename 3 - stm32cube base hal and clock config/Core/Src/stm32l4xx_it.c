@@ -185,23 +185,7 @@ void SysTick_Handler(void)
   /* USER CODE BEGIN SysTick_IRQn 0 */
 
   /* USER CODE END SysTick_IRQn 0 */
-  
-  /* HAL tick increment (if using HAL) */
-  #ifdef HAL_MODULE_ENABLED
   HAL_IncTick();
-  #endif
-  
-  /* FreeRTOS tick handler (will be enabled when FreeRTOS is added) */
-  /* Uncomment when adding FreeRTOS:
-  #include "FreeRTOS.h"
-  #include "task.h"
-  extern void xPortSysTickHandler(void);
-  
-  if (xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED) {
-      xPortSysTickHandler();
-  }
-  */
-  
   /* USER CODE BEGIN SysTick_IRQn 1 */
 
   /* USER CODE END SysTick_IRQn 1 */

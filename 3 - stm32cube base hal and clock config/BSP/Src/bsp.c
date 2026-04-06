@@ -3,7 +3,7 @@
  * @file    bsp.c
  * @brief   Board Support Package - Main implementation
  * @details This file provides the main BSP initialization function that
- *          initializes all board peripherals (LEDs, buttons, etc.)
+ *          initializes all board peripherals (LEDs, button, USART3, etc.)
  ******************************************************************************
  */
 
@@ -11,6 +11,7 @@
 #include "bsp.h"
 #include "bsp_leds.h"
 #include "bsp_button.h"
+#include "bsp_uart3.h"
 
 /* Private typedef -----------------------------------------------------------*/
 
@@ -40,5 +41,6 @@ void BSP_Init(void)
     /* Initialize Button */
     BSP_Button_Init();
 
-    /* Add other board initialization here if needed */
+    /* USART3 (virtual COM via ST-LINK) */
+    BSP_USART3_Init();
 }
