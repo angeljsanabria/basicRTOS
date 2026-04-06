@@ -184,7 +184,7 @@ void vLED3_Task(void *pvParameters)
   for(;;)
   {
     /* Toggle LED3 */
-    BSP_LED_Toggle(BSP_LED2);
+    BSP_LED_Toggle(BSP_LED3);
 
     /* Delay for 1000ms (non-blocking for other tasks) */
     vTaskDelay(pdMS_TO_TICKS(1000));

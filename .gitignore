@@ -10,6 +10,7 @@ setup-git.sh
 
 # Carpeta con archivos que no se versionan
 noGit/
+stlink*/
 
 # Build files
 build/
