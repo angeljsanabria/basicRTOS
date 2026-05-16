@@ -41,6 +41,17 @@ Antes de proponer cualquier solucion:
 
 **SI ALGUNA VERIFICACION FALLA: DETENERSE Y BUSCAR LA SOLUCION CORRECTA**
 
+### PASO 5: RESPETO ESTRICTO DEL ALCANCE PEDIDO (OBLIGATORIO)
+**CRITICO - NO HACER CAMBIOS NO PEDIDOS**:
+
+1. Si el usuario pide un cambio puntual (ej: "solo UART"), modificar SOLO eso.
+2. NO copiar carpetas completas ni archivos adicionales "por conveniencia".
+3. Si para completar el pedido parece necesario tocar mas archivos, DETENERSE y pedir confirmacion explicita.
+4. Antes de aplicar cambios, listar mentalmente el alcance exacto y verificar: "¿Esto me lo pidio el usuario?"
+5. Si un archivo no fue pedido de forma directa o implicita clara, NO modificarlo.
+
+**REGLA DE ORO**: Mejor quedarse corto y pedir confirmacion que tocar algo no pedido.
+
 ## ⚠️ APLICACION OBLIGATORIA DE ESTAS RULES
 
 **CRITICO**: Estas rules son OBLIGATORIAS y deben aplicarse SIEMPRE, sin excepciones, en TODOS los modos de interaccion:

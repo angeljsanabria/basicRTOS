@@ -93,6 +93,9 @@ int main(void)
   /* Initialize Board Support Package (LEDs, buttons, etc.) */
   BSP_Init();
   
+	/* Inicilizo Perifericos*/
+  (void)API_uart_data_init();
+
   /* Create FreeRTOS tasks */
   /* Task 1: Blink LED2 every 500ms */
   /* Use larger stack size (256 words = 1024 bytes) for safety */
