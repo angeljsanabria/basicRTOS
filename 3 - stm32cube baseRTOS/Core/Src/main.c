@@ -25,6 +25,7 @@
 #include "clock_config.h"
 #include "FreeRTOS.h"
 #include "task.h"
+#include "API_uart_data.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
